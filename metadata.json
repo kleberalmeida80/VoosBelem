@@ -1,0 +1,7 @@
+{
+  "name": "Belém Voos Real-Time",
+  "description": "Monitoramento de voos em tempo real do Aeroporto Internacional de Belém (Val de Cans - BEL/SBEG) com mapa interativo e status atualizados.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
