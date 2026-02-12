@@ -3,35 +3,50 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voos Belém - Tempo Real</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Radar BEL - Voos em Tempo Real</title>
+    
+    <!-- Tailwind Play CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <!-- Leaflet CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- PWA -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#1e88e5">
+    <meta name="theme-color" content="#1d4ed8">
+    <link rel="apple-touch-icon" href="https://picsum.photos/180/180">
+
     <style>
         body, html, #root { height: 100%; margin: 0; padding: 0; overflow: hidden; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
         .leaflet-container { height: 100%; width: 100%; z-index: 1; }
-        .custom-plane-icon { transition: transform 0.5s ease-in-out; }
-        /* Mobile height adjustments */
+        .custom-plane-icon { transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        /* Ocultar scrollbar mas manter funcionalidade */
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
         @media (max-width: 768px) {
-            .app-container { height: auto; display: block; overflow-y: auto; }
-            .map-container { height: 400px; position: sticky; top: 0; z-index: 10; }
+            .app-container { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+            .map-container { height: 45%; order: 1; position: relative; }
+            .sidebar-container { height: 55%; order: 2; z-index: 20; }
         }
     </style>
-<script type="importmap">
-{
-  "imports": {
-    "react/": "https://esm.sh/react@^19.2.4/",
-    "react": "https://esm.sh/react@^19.2.4",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.4/"
-  }
-}
-</script>
+    <script type="importmap">
+    {
+      "imports": {
+        "react/": "https://esm.sh/react@^19.2.4/",
+        "react": "https://esm.sh/react@^19.2.4",
+        "react-dom/": "https://esm.sh/react-dom@^19.2.4/"
+      }
+    }
+    </script>
 </head>
-<body class="bg-gray-50">
+<body class="bg-slate-50">
     <div id="root"></div>
 </body>
 </html>

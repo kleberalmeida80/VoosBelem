@@ -25,15 +25,15 @@ const App: React.FC = () => {
 
   useEffect(() => {
     loadData();
-    const interval = setInterval(loadData, 10000);
+    const interval = setInterval(loadData, 15000); // Atualizar a cada 15 segundos
     return () => clearInterval(interval);
   }, [loadData]);
 
   const uniqueCities = useMemo(() => {
     const cities = new Set<string>();
     flights.forEach(f => {
-      if (f.origin !== 'BEL' && f.origin !== '---') cities.add(f.origin);
-      if (f.destination !== 'BEL' && f.destination !== '---') cities.add(f.destination);
+      if (f.origin !== 'BEL' && f.origin !== '---' && f.origin !== 'N/A') cities.add(f.origin);
+      if (f.destination !== 'BEL' && f.destination !== '---' && f.destination !== 'N/A') cities.add(f.destination);
     });
     return Array.from(cities).sort();
   }, [flights]);
@@ -57,13 +57,8 @@ const App: React.FC = () => {
     });
   }, [flights, searchTerm, activeTab, statusFilter, cityFilter]);
 
-  const getStatusLabel = (status: string) => {
-    if (status === 'all') return 'Todos os Status';
-    return status.charAt(0).toUpperCase() + status.slice(1);
-  };
-
   return (
-    <div className="flex flex-col h-screen app-container overflow-hidden">
+    <div className="flex flex-col h-screen app-container overflow-hidden bg-slate-100">
       <Header 
         searchTerm={searchTerm} 
         setSearchTerm={setSearchTerm} 
@@ -71,56 +66,69 @@ const App: React.FC = () => {
       />
 
       <main className="flex-1 flex flex-col md:flex-row overflow-hidden">
-        <div className="w-full md:w-[400px] flex flex-col bg-white shadow-2xl z-20 overflow-hidden">
-          <div className="flex border-b">
+        {/* Barra Lateral / Lista de Voos */}
+        <div className="sidebar-container w-full md:w-[400px] flex flex-col bg-white shadow-2xl z-20 overflow-hidden border-r border-slate-200">
+          <div className="flex border-b border-slate-100">
             <button 
               onClick={() => setActiveTab(FlightTab.ARRIVALS)}
-              className={`flex-1 py-4 font-black text-xs uppercase tracking-widest transition-all ${activeTab === FlightTab.ARRIVALS ? 'text-blue-700 border-b-4 border-blue-700 bg-blue-50/50' : 'text-gray-400 hover:text-gray-600'}`}
+              className={`flex-1 py-4 font-black text-[11px] uppercase tracking-widest transition-all ${activeTab === FlightTab.ARRIVALS ? 'text-blue-700 border-b-4 border-blue-700 bg-blue-50/40' : 'text-slate-400 hover:text-slate-600'}`}
             >
               <i className="fas fa-plane-arrival mr-2"></i> Chegadas
             </button>
             <button 
               onClick={() => setActiveTab(FlightTab.DEPARTURES)}
-              className={`flex-1 py-4 font-black text-xs uppercase tracking-widest transition-all ${activeTab === FlightTab.DEPARTURES ? 'text-blue-700 border-b-4 border-blue-700 bg-blue-50/50' : 'text-gray-400 hover:text-gray-600'}`}
+              className={`flex-1 py-4 font-black text-[11px] uppercase tracking-widest transition-all ${activeTab === FlightTab.DEPARTURES ? 'text-blue-700 border-b-4 border-blue-700 bg-blue-50/40' : 'text-slate-400 hover:text-slate-600'}`}
             >
               <i className="fas fa-plane-departure mr-2"></i> Saídas
             </button>
           </div>
 
-          <div className="p-3 bg-gray-50 border-b flex flex-col gap-3">
-            <div className="flex gap-2 overflow-x-auto whitespace-nowrap scrollbar-hide pb-1">
-              {['all', FlightStatus.AIRBORNE, FlightStatus.GROUNDED].map(status => (
+          <div className="p-4 bg-slate-50/80 border-b border-slate-100 flex flex-col gap-4">
+            <div className="flex gap-2 overflow-x-auto whitespace-nowrap scrollbar-hide">
+              <button
+                onClick={() => setStatusFilter('all')}
+                className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase border-2 transition-all ${statusFilter === 'all' ? 'bg-blue-600 text-white border-blue-600 shadow-lg scale-105' : 'bg-white text-slate-500 border-slate-200'}`}
+              >
+                Todos
+              </button>
+              {[FlightStatus.AIRBORNE, FlightStatus.GROUNDED].map(status => (
                   <button
                       key={status}
                       onClick={() => setStatusFilter(status)}
-                      className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase border-2 transition-all ${statusFilter === status ? 'bg-blue-600 text-white border-blue-600 shadow-md scale-105' : 'bg-white text-gray-500 border-gray-200 hover:border-blue-200'}`}
+                      className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase border-2 transition-all ${statusFilter === status ? 'bg-blue-600 text-white border-blue-600 shadow-lg scale-105' : 'bg-white text-slate-500 border-slate-200'}`}
                   >
-                      {getStatusLabel(status)}
+                      {status}
                   </button>
               ))}
             </div>
             
-            <div className="relative">
-              <label className="text-[9px] font-black uppercase text-gray-400 ml-1 mb-1 block">Filtrar por Cidade</label>
+            <div className="relative group">
+              <label className="text-[9px] font-black uppercase text-slate-400 ml-1 mb-1 block tracking-tighter">Conexão por Cidade</label>
               <select 
                 value={cityFilter}
                 onChange={(e) => setCityFilter(e.target.value)}
-                className="w-full text-xs font-bold p-2.5 rounded-lg border-2 border-gray-200 bg-white outline-none focus:border-blue-500 appearance-none transition-colors"
+                className="w-full text-xs font-bold p-3 rounded-xl border-2 border-slate-200 bg-white outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 appearance-none transition-all"
               >
                 <option value="all">Todas as Cidades</option>
                 {uniqueCities.map(city => (
                   <option key={city} value={city}>{city}</option>
                 ))}
               </select>
-              <i className="fas fa-location-dot absolute right-3 bottom-3 text-blue-400"></i>
+              <i className="fas fa-chevron-down absolute right-4 bottom-3.5 text-blue-500 group-focus-within:rotate-180 transition-transform"></i>
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300">
+          <div className="flex-1 overflow-y-auto scrollbar-hide bg-slate-50/30">
             {loading ? (
-              <div className="flex flex-col items-center justify-center h-64 space-y-4">
-                <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-blue-700"></div>
-                <p className="text-gray-500 font-bold text-sm animate-pulse">Sincronizando radares...</p>
+              <div className="flex flex-col items-center justify-center h-full space-y-4 p-10 text-center">
+                <div className="relative">
+                  <div className="animate-spin rounded-full h-16 w-16 border-4 border-slate-100 border-t-blue-600"></div>
+                  <i className="fas fa-satellite-dish absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-blue-600"></i>
+                </div>
+                <div>
+                  <p className="text-slate-800 font-black text-sm uppercase tracking-tight">Sincronizando Radar</p>
+                  <p className="text-slate-400 text-[10px] mt-1">Conectando aos receptores ADS-B...</p>
+                </div>
               </div>
             ) : filteredFlights.length > 0 ? (
               filteredFlights.map(flight => (
@@ -132,56 +140,57 @@ const App: React.FC = () => {
                 />
               ))
             ) : (
-              <div className="p-12 text-center">
-                <div className="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <i className="fas fa-plane-slash text-gray-300 text-2xl"></i>
+              <div className="p-16 text-center">
+                <div className="bg-slate-100 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6 transform rotate-12">
+                  <i className="fas fa-plane-slash text-slate-300 text-3xl"></i>
                 </div>
-                <p className="text-gray-600 font-bold text-sm">Nenhum voo encontrado</p>
-                <p className="text-gray-400 text-xs mt-1">Tente ajustar seus filtros ou busca.</p>
+                <p className="text-slate-700 font-black text-sm">Sem voos no momento</p>
+                <p className="text-slate-400 text-xs mt-2 px-6">Não detectamos tráfego aéreo com os filtros selecionados.</p>
               </div>
             )}
           </div>
         </div>
 
-        <div className="flex-1 relative map-container">
+        {/* Mapa em Tempo Real */}
+        <div className="map-container flex-1 relative bg-slate-200">
           <FlightMap 
             flights={flights} 
             selectedFlight={selectedFlight}
             onMarkerClick={setSelectedFlight}
           />
           
-          <div className="absolute bottom-8 right-8 bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-2xl z-[1000] text-[11px] text-gray-800 border border-white/50 font-black space-y-3 min-w-[180px]">
-            <p className="text-[9px] text-blue-600 uppercase tracking-widest border-b pb-2 mb-2">Legenda do Radar</p>
-            <div className="flex items-center gap-3">
-              <div className="w-5 h-5 rounded-lg bg-emerald-500 flex items-center justify-center text-white shadow-lg shadow-emerald-200">
-                <i className="fas fa-plane-arrival text-[9px]"></i>
+          <div className="absolute bottom-6 left-6 md:left-auto md:right-6 bg-white/95 backdrop-blur-xl p-5 rounded-3xl shadow-2xl z-[1000] text-[11px] text-slate-800 border border-white font-black space-y-4 min-w-[200px] pointer-events-none">
+            <p className="text-[9px] text-blue-700 uppercase tracking-[0.2em] border-b border-slate-100 pb-3 mb-1">Legenda Técnica</p>
+            <div className="flex items-center gap-4">
+              <div className="w-6 h-6 rounded-xl bg-emerald-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
+                <i className="fas fa-plane-arrival text-[10px]"></i>
               </div>
-              <span>Chegando em Belém</span>
+              <span className="tracking-tight">Chegando em Belém</span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-5 h-5 rounded-lg bg-orange-500 flex items-center justify-center text-white shadow-lg shadow-orange-200">
-                <i className="fas fa-plane-departure text-[9px]"></i>
+            <div className="flex items-center gap-4">
+              <div className="w-6 h-6 rounded-xl bg-orange-500 flex items-center justify-center text-white shadow-lg shadow-orange-500/30">
+                <i className="fas fa-plane-departure text-[10px]"></i>
               </div>
-              <span>Saindo de Belém</span>
+              <span className="tracking-tight">Saindo de Belém</span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-5 h-5 rounded-lg bg-gray-400 flex items-center justify-center text-white shadow-md">
-                <i className="fas fa-plane text-[9px]"></i>
+            <div className="flex items-center gap-4">
+              <div className="w-6 h-6 rounded-xl bg-slate-400 flex items-center justify-center text-white shadow-md">
+                <i className="fas fa-plane text-[10px]"></i>
               </div>
-              <span>Em Solo / Outros</span>
+              <span className="tracking-tight text-slate-500">No Solo / Outros</span>
             </div>
           </div>
         </div>
       </main>
 
-      <footer className="bg-white border-t py-2 px-6 text-[10px] font-bold text-gray-400 flex justify-between items-center shrink-0">
-        <div className="flex items-center gap-2">
-            <i className="fas fa-satellite"></i>
-            <span>Rede OpenSky Network</span>
+      <footer className="bg-white border-t border-slate-100 py-2.5 px-8 text-[10px] font-black text-slate-400 flex justify-between items-center shrink-0">
+        <div className="flex items-center gap-3">
+            <i className="fas fa-shield-halved text-blue-500"></i>
+            <span className="uppercase tracking-widest">Protocolo ADS-B Ativo</span>
         </div>
-        <div className="flex items-center gap-2 text-emerald-600">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-          <span>Transmissão em tempo real</span>
+        <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span className="uppercase tracking-tighter">Live BEL</span>
         </div>
       </footer>
     </div>

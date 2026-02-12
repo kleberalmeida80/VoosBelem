@@ -10,7 +10,7 @@ export interface Flight {
   velocity: number | null;
   true_track: number | null;
   vertical_rate: number | null;
-  status: 'no ar' | 'programado' | 'atrasado' | 'cancelado' | 'em solo';
+  status: 'Em Voo' | 'Programado' | 'Atrasado' | 'Cancelado' | 'No Solo';
   airline: string;
   origin: string;
   destination: string;
@@ -23,9 +23,9 @@ export enum FlightTab {
 }
 
 export enum FlightStatus {
-  AIRBORNE = 'no ar',
-  SCHEDULED = 'programado',
-  DELAYED = 'atrasado',
-  CANCELLED = 'cancelado',
-  GROUNDED = 'em solo'
+  AIRBORNE = 'Em Voo',
+  SCHEDULED = 'Programado',
+  DELAYED = 'Atrasado',
+  CANCELLED = 'Cancelado',
+  GROUNDED = 'No Solo'
 }
